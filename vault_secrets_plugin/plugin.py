@@ -28,7 +28,7 @@ inputs = {
             "help_text": "Path to secret or role."
         },
         "version": {
-            "type": "integer",
+            "type": "string",
             "label": "Version",
             "help_text": "Version for KV v2 (optional)."
         },
@@ -36,6 +36,11 @@ inputs = {
             "type": "string",
             "label": "Secret Key",
             "help_text": "Specific key to extract from Vault response."
+        },
+        "namespace": {
+            "type": "string",
+            "label": "Vault Namespace",
+            "help_text": "Vault Enterprise namespace (optional)."
         }
     },
     "required": ["engine_type", "mount", "path"]
@@ -50,18 +55,23 @@ def backend(**kwargs):
     """
     Main entry point for AWX to resolve secret values.
     """
-    token = authenticate(kwargs)
+    token, auth_headers = authenticate(kwargs)
 
+    # Lookup namespace can override auth namespace
+    lookup_namespace = kwargs.get("namespace")
     headers = {
-        'X-Vault-Token': token
+        "X-Vault-Token": token
     }
+    if lookup_namespace:
+        headers["X-Vault-Namespace"] = lookup_namespace
+    else:
+        headers.update(auth_headers)
 
     engine_type = kwargs.get("engine_type")
     mount = kwargs.get("mount")
     path = kwargs.get("path")
     secret_key = kwargs.get("secret_key")
     version = kwargs.get("version")
-    params = kwargs.get("params")
 
     if engine_type == "static":
         if version:
@@ -85,11 +95,7 @@ def backend(**kwargs):
     elif engine_type == "dynamic":
         full_path = f"/v1/{mount}/{path}"
         url = f"{kwargs['url']}{full_path}"
-
-        if params:
-            response = requests.post(url, headers=headers, json=json.loads(params))
-        else:
-            response = requests.get(url, headers=headers)
+        response = requests.get(url, headers=headers)
         response.raise_for_status()
         result = response.json()["data"]
 
