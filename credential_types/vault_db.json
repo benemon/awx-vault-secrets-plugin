@@ -4,6 +4,7 @@
   "inputs": {
     "fields": [
       {"id": "engine_type", "type": "string", "default": "dynamic", "label": "Engine Type"},
+      {"id": "namespace", "type": "string", "label": "Vault Enterprise Namespace (optional)"},
       {"id": "dynamic_engine", "type": "string", "default": "database", "label": "Dynamic Engine"},
       {"id": "mount", "type": "string", "label": "Mount Path"},
       {"id": "path", "type": "string", "label": "Role Path"},

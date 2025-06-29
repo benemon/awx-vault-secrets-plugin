@@ -3,6 +3,7 @@
   "kind": "cloud",
   "inputs": {
     "fields": [
+      {"id": "namespace", "type": "string", "label": "Vault Enterprise Namespace (optional)"},
       {"id": "engine_type", "type": "string", "default": "dynamic", "label": "Engine Type"},
       {"id": "dynamic_engine", "type": "string", "default": "aws", "label": "Dynamic Engine"},
       {"id": "mount", "type": "string", "label": "Mount Path"},

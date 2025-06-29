@@ -4,18 +4,18 @@
   "inputs": {
     "fields": [
       {"id": "url", "type": "string", "label": "Vault URL"},
-      {"id": "namespace", "type": "string", "label": "Vault Namespace"},
+      {"id": "namespace", "type": "string", "label": "Vault Enterprise Namespace (optional)"},
       {
         "id": "auth_method",
         "type": "string",
         "label": "Authentication Method",
         "choices": ["token", "approle", "jwt"]
       },
-      {"id": "token_value", "type": "string", "label": "Vault Token"},
+      {"id": "token_value", "type": "string", "secret": true, "label": "Vault Token"},
       {"id": "approle_role_id", "type": "string", "label": "AppRole Role ID"},
-      {"id": "approle_secret_id", "type": "string", "label": "AppRole Secret ID"},
+      {"id": "approle_secret_id", "type": "string", "secret": true, "label": "AppRole Secret ID"},
       {"id": "jwt_role", "type": "string", "label": "JWT Role"},
-      {"id": "jwt_token", "type": "string", "label": "JWT Token"},
+      {"id": "jwt_token", "type": "string", "secret": true, "label": "JWT Token"},
       {"id": "approle_mount_point", "type": "string", "label": "AppRole Mount Point"},
       {"id": "jwt_mount_point", "type": "string", "label": "JWT Mount Point"}
     ]

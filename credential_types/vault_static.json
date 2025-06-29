@@ -4,6 +4,7 @@
   "inputs": {
     "fields": [
       {"id": "engine_type", "type": "string", "default": "static", "label": "Engine Type"},
+      {"id": "namespace", "type": "string", "label": "Vault Enterprise Namespace (optional)"},
       {"id": "mount", "type": "string", "label": "Mount Path"},
       {"id": "path", "type": "string", "label": "Secret Path"},
       {"id": "version", "type": "string", "label": "KV Version"},
