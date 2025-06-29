@@ -1,9 +1,6 @@
 {
   "name": "Vault Database Dynamic Credential Lookup",
   "kind": "external",
-  "metadata": {
-    "plugin_name": "vault_secrets"
-  },
   "inputs": {
     "fields": [
       {"id": "engine_type", "type": "string", "default": "dynamic", "label": "Engine Type"},

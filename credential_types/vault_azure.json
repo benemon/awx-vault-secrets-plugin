@@ -1,9 +1,6 @@
 {
   "name": "Vault Azure Dynamic Credential Lookup",
   "kind": "cloud",
-  "metadata": {
-    "plugin_name": "vault_secrets"
-  },
   "inputs": {
     "fields": [
       {"id": "engine_type", "type": "string", "default": "dynamic", "label": "Engine Type"},

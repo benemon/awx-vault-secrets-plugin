@@ -1,9 +1,6 @@
 {
   "name": "Vault Static Secret Lookup",
   "kind": "external",
-  "metadata": {
-    "plugin_name": "vault_secrets"
-  },
   "inputs": {
     "fields": [
       {"id": "engine_type", "type": "string", "default": "static", "label": "Engine Type"},

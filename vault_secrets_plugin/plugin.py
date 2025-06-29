@@ -24,7 +24,19 @@ inputs = {
 }
 
 injectors = {
-    "env": {}
+    "env": {
+        "VAULT_SECRET_JSON": "{{ secret_json }}",
+        "VAULT_SECRET_VALUE": "{{ secret_value }}",
+        "AWS_ACCESS_KEY_ID": "{{ aws_access_key }}",
+        "AWS_SECRET_ACCESS_KEY": "{{ aws_secret_key }}",
+        "AWS_SESSION_TOKEN": "{{ aws_session_token }}",
+        "DB_USERNAME": "{{ db_username }}",
+        "DB_PASSWORD": "{{ db_password }}",
+        "ARM_CLIENT_ID": "{{ arm_client_id }}",
+        "ARM_CLIENT_SECRET": "{{ arm_client_secret }}",
+        "ARM_TENANT_ID": "{{ arm_tenant_id }}",
+        "ARM_SUBSCRIPTION_ID": "{{ arm_subscription_id }}"
+    }
 }
 
 metadata = {
