@@ -39,11 +39,6 @@ injectors = {
     }
 }
 
-metadata = {
-    "version": "0.0.1",
-    "author": "Benjamin Holmes"
-}
-
 def backend(**kwargs):
     token, auth_headers = authenticate(kwargs)
 
