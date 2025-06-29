@@ -6,7 +6,11 @@
       {"id": "engine_type", "type": "string", "default": "dynamic", "label": "Engine Type"},
       {"id": "dynamic_engine", "type": "string", "default": "azure", "label": "Dynamic Engine"},
       {"id": "mount", "type": "string", "label": "Mount Path"},
-      {"id": "path", "type": "string", "label": "Role Path"}
+      {"id": "path", "type": "string", "label": "Role Path"},
+      {"id": "arm_client_id", "type": "string", "label": "ARM Client ID"},
+      {"id": "arm_client_secret", "type": "string", "label": "ARM Client Secret"},
+      {"id": "arm_tenant_id", "type": "string", "label": "ARM Tenant ID"},
+      {"id": "arm_subscription_id", "type": "string", "label": "ARM Subscription ID"}
     ]
   },
   "injectors": {

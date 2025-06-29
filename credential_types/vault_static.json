@@ -1,13 +1,15 @@
 {
   "name": "Vault Static Secret Lookup",
-  "kind": "external",
+  "kind": "cloud",
   "inputs": {
     "fields": [
       {"id": "engine_type", "type": "string", "default": "static", "label": "Engine Type"},
       {"id": "mount", "type": "string", "label": "Mount Path"},
       {"id": "path", "type": "string", "label": "Secret Path"},
       {"id": "version", "type": "string", "label": "KV Version"},
-      {"id": "secret_key", "type": "string", "label": "Secret Key"}
+      {"id": "secret_key", "type": "string", "label": "Secret Key"},
+      {"id": "secret_json", "type": "string", "label": "Secret JSON"},
+      {"id": "secret_value", "type": "string", "label": "Secret Value"}
     ]
   },
   "injectors": {

@@ -1,12 +1,14 @@
 {
   "name": "Vault Database Dynamic Credential Lookup",
-  "kind": "external",
+  "kind": "net",
   "inputs": {
     "fields": [
       {"id": "engine_type", "type": "string", "default": "dynamic", "label": "Engine Type"},
       {"id": "dynamic_engine", "type": "string", "default": "database", "label": "Dynamic Engine"},
       {"id": "mount", "type": "string", "label": "Mount Path"},
-      {"id": "path", "type": "string", "label": "Role Path"}
+      {"id": "path", "type": "string", "label": "Role Path"},
+      {"id": "db_username", "type": "string", "label": "DB Username"},
+      {"id": "db_password", "type": "string", "label": "DB Password"}
     ]
   },
   "injectors": {
