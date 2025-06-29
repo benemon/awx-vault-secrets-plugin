@@ -1,23 +1,17 @@
 {
   "name": "Vault AWS Dynamic Credential Lookup",
   "kind": "cloud",
+  "metadata": {
+    "plugin_name": "vault_secrets"
+  },
   "inputs": {
     "fields": [
-      {"id": "namespace", "type": "string", "label": "Vault Enterprise Namespace (optional)"},
+      {"id": "namespace", "type": "string", "label": "Vault Namespace"},
       {"id": "engine_type", "type": "string", "default": "dynamic", "label": "Engine Type"},
       {"id": "dynamic_engine", "type": "string", "default": "aws", "label": "Dynamic Engine"},
       {"id": "mount", "type": "string", "label": "Mount Path"},
-      {"id": "path", "type": "string", "label": "Role Path"},
-      {"id": "aws_access_key", "type": "string", "label": "AWS Access Key"},
-      {"id": "aws_secret_key", "type": "string", "label": "AWS Secret Key"},
-      {"id": "aws_session_token", "type": "string", "label": "AWS Session Token"}
+      {"id": "path", "type": "string", "label": "Role Path"}
     ]
   },
-  "injectors": {
-    "env": {
-      "AWS_ACCESS_KEY_ID": "{{ aws_access_key }}",
-      "AWS_SECRET_ACCESS_KEY": "{{ aws_secret_key }}",
-      "AWS_SESSION_TOKEN": "{{ aws_session_token }}"
-    }
-  }
+  "injectors": {}
 }

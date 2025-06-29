@@ -1,22 +1,19 @@
 {
   "name": "Vault Static Secret Lookup",
-  "kind": "cloud",
+  "kind": "net",
+  "metadata": {
+    "plugin_name": "vault_secrets"
+  },
   "inputs": {
     "fields": [
+      {"id": "namespace", "type": "string", "label": "Vault Namespace"},
       {"id": "engine_type", "type": "string", "default": "static", "label": "Engine Type"},
-      {"id": "namespace", "type": "string", "label": "Vault Enterprise Namespace (optional)"},
+      {"id": "kv_version", "type": "string", "default": "2", "label": "KV Engine Version"},
       {"id": "mount", "type": "string", "label": "Mount Path"},
       {"id": "path", "type": "string", "label": "Secret Path"},
-      {"id": "kv_version", "type": "string", "label": "KV Engine Version", "choices": ["1", "2"]},
-      {"id": "secret_key", "type": "string", "label": "Secret Key"},
-      {"id": "secret_json", "type": "string", "label": "Secret JSON"},
-      {"id": "secret_value", "type": "string", "label": "Secret Value"}
+      {"id": "version", "type": "string", "label": "Secret Version"},
+      {"id": "secret_key", "type": "string", "label": "Secret Key"}
     ]
   },
-  "injectors": {
-    "env": {
-      "VAULT_SECRET_JSON": "{{ secret_json }}",
-      "VAULT_SECRET_VALUE": "{{ secret_value }}"
-    }
-  }
+  "injectors": {}
 }

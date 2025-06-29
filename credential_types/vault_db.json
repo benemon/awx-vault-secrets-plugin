@@ -1,21 +1,17 @@
 {
   "name": "Vault Database Dynamic Credential Lookup",
   "kind": "net",
+  "metadata": {
+    "plugin_name": "vault_secrets"
+  },
   "inputs": {
     "fields": [
+      {"id": "namespace", "type": "string", "label": "Vault Namespace"},
       {"id": "engine_type", "type": "string", "default": "dynamic", "label": "Engine Type"},
-      {"id": "namespace", "type": "string", "label": "Vault Enterprise Namespace (optional)"},
       {"id": "dynamic_engine", "type": "string", "default": "database", "label": "Dynamic Engine"},
       {"id": "mount", "type": "string", "label": "Mount Path"},
-      {"id": "path", "type": "string", "label": "Role Path"},
-      {"id": "db_username", "type": "string", "label": "DB Username"},
-      {"id": "db_password", "type": "string", "label": "DB Password"}
+      {"id": "path", "type": "string", "label": "Role Path"}
     ]
   },
-  "injectors": {
-    "env": {
-      "DB_USERNAME": "{{ db_username }}",
-      "DB_PASSWORD": "{{ db_password }}"
-    }
-  }
+  "injectors": {}
 }

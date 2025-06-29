@@ -1,25 +1,17 @@
 {
   "name": "Vault Azure Dynamic Credential Lookup",
   "kind": "cloud",
+  "metadata": {
+    "plugin_name": "vault_secrets"
+  },
   "inputs": {
     "fields": [
+      {"id": "namespace", "type": "string", "label": "Vault Namespace"},
       {"id": "engine_type", "type": "string", "default": "dynamic", "label": "Engine Type"},
-      {"id": "namespace", "type": "string", "label": "Vault Enterprise Namespace (optional)"},
       {"id": "dynamic_engine", "type": "string", "default": "azure", "label": "Dynamic Engine"},
       {"id": "mount", "type": "string", "label": "Mount Path"},
-      {"id": "path", "type": "string", "label": "Role Path"},
-      {"id": "arm_client_id", "type": "string", "label": "ARM Client ID"},
-      {"id": "arm_client_secret", "type": "string", "label": "ARM Client Secret"},
-      {"id": "arm_tenant_id", "type": "string", "label": "ARM Tenant ID"},
-      {"id": "arm_subscription_id", "type": "string", "label": "ARM Subscription ID"}
+      {"id": "path", "type": "string", "label": "Role Path"}
     ]
   },
-  "injectors": {
-    "env": {
-      "ARM_CLIENT_ID": "{{ arm_client_id }}",
-      "ARM_CLIENT_SECRET": "{{ arm_client_secret }}",
-      "ARM_TENANT_ID": "{{ arm_tenant_id }}",
-      "ARM_SUBSCRIPTION_ID": "{{ arm_subscription_id }}"
-    }
-  }
+  "injectors": {}
 }
