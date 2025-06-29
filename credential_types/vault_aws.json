@@ -3,61 +3,18 @@
   "kind": "cloud",
   "inputs": {
     "fields": [
-      {
-        "id": "url",
-        "type": "string"
-      },
-      {
-        "id": "auth_method",
-        "type": "string",
-        "choices": [
-          "token",
-          "approle",
-          "jwt"
-        ]
-      },
-      {
-        "id": "token_value",
-        "type": "string"
-      },
-      {
-        "id": "approle_role_id",
-        "type": "string"
-      },
-      {
-        "id": "approle_secret_id",
-        "type": "string"
-      },
-      {
-        "id": "jwt_role",
-        "type": "string"
-      },
-      {
-        "id": "jwt_token",
-        "type": "string"
-      },
-      {
-        "id": "namespace",
-        "type": "string"
-      },
-      {
-        "id": "engine_type",
-        "type": "string",
-        "default": "dynamic"
-      },
-      {
-        "id": "dynamic_engine",
-        "type": "string",
-        "default": "aws"
-      },
-      {
-        "id": "mount",
-        "type": "string"
-      },
-      {
-        "id": "path",
-        "type": "string"
-      }
+      {"id": "url", "type": "string", "label": "Vault URL"},
+      {"id": "auth_method", "type": "string", "choices": ["token","approle","jwt"], "label": "Authentication Method"},
+      {"id": "token_value", "type": "string", "label": "Vault Token"},
+      {"id": "approle_role_id", "type": "string", "label": "AppRole Role ID"},
+      {"id": "approle_secret_id", "type": "string", "label": "AppRole Secret ID"},
+      {"id": "jwt_role", "type": "string", "label": "JWT Role"},
+      {"id": "jwt_token", "type": "string", "label": "JWT Token"},
+      {"id": "namespace", "type": "string", "label": "Vault Namespace"},
+      {"id": "engine_type", "type": "string", "default": "dynamic", "label": "Engine Type"},
+      {"id": "dynamic_engine", "type": "string", "default": "aws", "label": "Dynamic Engine"},
+      {"id": "mount", "type": "string", "label": "Mount Path"},
+      {"id": "path", "type": "string", "label": "Role Path"}
     ]
   },
   "injectors": {

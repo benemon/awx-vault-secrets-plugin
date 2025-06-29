@@ -1,63 +1,12 @@
 {
-  "name": "Vault Database Dynamic Credential",
-  "kind": "cloud",
+  "name": "Vault Database Dynamic Credential Lookup",
+  "kind": "external",
   "inputs": {
     "fields": [
-      {
-        "id": "url",
-        "type": "string"
-      },
-      {
-        "id": "auth_method",
-        "type": "string",
-        "choices": [
-          "token",
-          "approle",
-          "jwt"
-        ]
-      },
-      {
-        "id": "token_value",
-        "type": "string"
-      },
-      {
-        "id": "approle_role_id",
-        "type": "string"
-      },
-      {
-        "id": "approle_secret_id",
-        "type": "string"
-      },
-      {
-        "id": "jwt_role",
-        "type": "string"
-      },
-      {
-        "id": "jwt_token",
-        "type": "string"
-      },
-      {
-        "id": "namespace",
-        "type": "string"
-      },
-      {
-        "id": "engine_type",
-        "type": "string",
-        "default": "dynamic"
-      },
-      {
-        "id": "dynamic_engine",
-        "type": "string",
-        "default": "database"
-      },
-      {
-        "id": "mount",
-        "type": "string"
-      },
-      {
-        "id": "path",
-        "type": "string"
-      }
+      {"id": "engine_type", "type": "string", "default": "dynamic", "label": "Engine Type"},
+      {"id": "dynamic_engine", "type": "string", "default": "database", "label": "Dynamic Engine"},
+      {"id": "mount", "type": "string", "label": "Mount Path"},
+      {"id": "path", "type": "string", "label": "Role Path"}
     ]
   },
   "injectors": {
