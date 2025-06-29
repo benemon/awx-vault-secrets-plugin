@@ -1,16 +1,11 @@
 {
-  "name": "Vault AWS Dynamic Credential",
+  "name": "Vault AWS Dynamic Credential Lookup",
   "kind": "cloud",
+  "metadata": {
+    "plugin_name": "vault_secrets"
+  },
   "inputs": {
     "fields": [
-      {"id": "url", "type": "string", "label": "Vault URL"},
-      {"id": "auth_method", "type": "string", "choices": ["token","approle","jwt"], "label": "Authentication Method"},
-      {"id": "token_value", "type": "string", "label": "Vault Token"},
-      {"id": "approle_role_id", "type": "string", "label": "AppRole Role ID"},
-      {"id": "approle_secret_id", "type": "string", "label": "AppRole Secret ID"},
-      {"id": "jwt_role", "type": "string", "label": "JWT Role"},
-      {"id": "jwt_token", "type": "string", "label": "JWT Token"},
-      {"id": "namespace", "type": "string", "label": "Vault Namespace"},
       {"id": "engine_type", "type": "string", "default": "dynamic", "label": "Engine Type"},
       {"id": "dynamic_engine", "type": "string", "default": "aws", "label": "Dynamic Engine"},
       {"id": "mount", "type": "string", "label": "Mount Path"},
