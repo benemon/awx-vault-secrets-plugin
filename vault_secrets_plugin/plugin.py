@@ -4,6 +4,17 @@ from .dynamic_aws import get_aws_secret
 from .dynamic_db import get_db_secret
 from .dynamic_azure import get_azure_secret
 
+name = "Vault Secrets Plugin"
+
+inputs = {
+    "fields": [],
+    "required": []
+}
+
+injectors = {
+    "env": {}
+}
+
 def backend(**kwargs):
     token, auth_headers = authenticate(kwargs)
 
