@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
-# Prompt for the AAP base URL
-read -p "Enter your AAP base URL (e.g., https://awx.example.org): " AAP_URL
+# Prompt for the AAP Controller URL
+read -p "Enter your AAP Controller URL (e.g., https://awx.example.org): " AAP_URL
 
 # Prompt for the OAuth2 token
 read -s -p "Enter your OAuth2 Bearer token: " TOKEN
