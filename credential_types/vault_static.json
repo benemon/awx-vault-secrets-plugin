@@ -1,6 +1,7 @@
 {
   "name": "Vault Static Secret Lookup",
-  "kind": "net",
+  "kind": "cloud",
+  "namespace": "vault_secrets",
   "metadata": {
     "plugin_name": "vault_secrets"
   },

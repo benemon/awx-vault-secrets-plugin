@@ -1,6 +1,7 @@
 {
   "name": "Vault Auth Credential",
   "kind": "cloud",
+  "namespace": "vault_secrets",
   "inputs": {
     "fields": [
       {"id": "url", "type": "string", "label": "Vault URL"},
