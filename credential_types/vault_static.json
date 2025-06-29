@@ -2,9 +2,6 @@
   "name": "Vault Static Secret Lookup",
   "kind": "cloud",
   "namespace": "vault_secrets",
-  "metadata": {
-    "plugin_name": "vault_secrets"
-  },
   "inputs": {
     "fields": [
       {"id": "namespace", "type": "string", "label": "Vault Namespace"},
