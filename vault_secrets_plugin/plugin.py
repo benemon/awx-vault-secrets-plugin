@@ -41,7 +41,8 @@ injectors = {
 
 metadata = {
     "version": "0.0.1",
-    "author": "Benjamin Holmes"
+    "author": "Benjamin Holmes",
+    "namespace": "vault_secrets"
 }
 
 def backend(**kwargs):
