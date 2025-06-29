@@ -1,5 +1,6 @@
 {
   "name": "Vault Database Dynamic Credential",
+  "kind": "cloud",
   "inputs": {
     "fields": [
       {

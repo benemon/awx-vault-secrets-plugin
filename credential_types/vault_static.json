@@ -1,5 +1,6 @@
 {
   "name": "Vault Static Secret",
+  "kind": "cloud",
   "inputs": {
     "fields": [
       {

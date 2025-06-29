@@ -1,5 +1,6 @@
 {
   "name": "Vault Azure Dynamic Credential",
+  "kind": "cloud",
   "inputs": {
     "fields": [
       {
