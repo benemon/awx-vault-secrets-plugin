@@ -2,7 +2,60 @@ import json
 import requests
 from .auth import authenticate
 
+# Required plugin metadata
+name = "Vault Secrets Plugin"
+
+# This defines the lookup credential schema (NOT the auth credential)
+inputs = {
+    "fields": {
+        "engine_type": {
+            "type": "string",
+            "choices": ["static", "dynamic"],
+            "required": True,
+            "label": "Engine Type",
+            "help_text": "Select static KV or dynamic engine."
+        },
+        "mount": {
+            "type": "string",
+            "required": True,
+            "label": "Vault Mount Path",
+            "help_text": "Mount path (e.g., kv, database)."
+        },
+        "path": {
+            "type": "string",
+            "required": True,
+            "label": "Secret Path",
+            "help_text": "Path to secret or role."
+        },
+        "version": {
+            "type": "integer",
+            "label": "Version",
+            "help_text": "Version for KV v2 (optional)."
+        },
+        "params": {
+            "type": "string",
+            "multiline": True,
+            "label": "Params (JSON)",
+            "help_text": "Optional JSON body for dynamic engines."
+        },
+        "secret_key": {
+            "type": "string",
+            "label": "Secret Key",
+            "help_text": "Specific key to extract from Vault response."
+        }
+    },
+    "required": ["engine_type", "mount", "path"]
+}
+
+# Optionally, you could define injectors (not required)
+injectors = {
+    "env": {}
+}
+
 def backend(**kwargs):
+    """
+    Main entry point for AWX to resolve secret values.
+    """
     token = authenticate(kwargs)
 
     headers = {
@@ -17,16 +70,28 @@ def backend(**kwargs):
     params = kwargs.get("params")
 
     if engine_type == "static":
-        full_path = f"/v1/{mount}/data/{path}" if version else f"/v1/{mount}/{path}"
+        if version:
+            # KV v2
+            full_path = f"/v1/{mount}/data/{path}"
+        else:
+            # KV v1
+            full_path = f"/v1/{mount}/{path}"
+
         url = f"{kwargs['url']}{full_path}"
         response = requests.get(url, headers=headers)
         response.raise_for_status()
         data = response.json()
-        result = data["data"]["data"] if "data" in data.get("data", {}) else data["data"]
+
+        # KV v2 nested response
+        if "data" in data.get("data", {}):
+            result = data["data"]["data"]
+        else:
+            result = data["data"]
 
     elif engine_type == "dynamic":
         full_path = f"/v1/{mount}/{path}"
         url = f"{kwargs['url']}{full_path}"
+
         if params:
             response = requests.post(url, headers=headers, json=json.loads(params))
         else:
@@ -39,4 +104,5 @@ def backend(**kwargs):
 
     if secret_key:
         return {secret_key: result.get(secret_key)}
+
     return result
