@@ -8,6 +8,6 @@ awx-python -m pip install .
 echo "Restarting AWX services..."
 supervisorctl restart all
 
-echo "Checking if plugin was discovered..."
-awx-manage list_credential_plugins
+echo "Reloading managed plugins after installation..."
+awx-manage setup_managed_credential_types
 popd
