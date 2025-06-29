@@ -14,11 +14,15 @@ function recreate_credential_type() {
   local name
   name=$(jq -r '.name' "$json_file")
 
+  # URL-encode the name
+  local urlencoded_name
+  urlencoded_name=$(python3 -c "import urllib.parse,sys; print(urllib.parse.quote(sys.argv[1]))" "$name")
+
   echo "Processing Credential Type: $name"
 
   # Look up existing Credential Type by name
   existing_id=$(curl -sSL -H "Authorization: Bearer ${TOKEN}" \
-    "${API}/credential_types/?name=${name}" | jq -r '.results[0].id // empty')
+    "${API}/credential_types/?name=${urlencoded_name}" | jq -r '.results[0].id // empty')
 
   if [[ -n "$existing_id" ]]; then
     echo "⚠️ Found existing Credential Type with ID $existing_id, deleting..."
