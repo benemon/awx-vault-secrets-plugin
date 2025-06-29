@@ -6,8 +6,5 @@ pushd ../
 awx-python -m pip install .
 
 echo "Restarting AWX services..."
-supervisorctl restart all
-
-echo "Reloading managed plugins after installation..."
-awx-manage setup_managed_credential_types
+automation-controller-service restart
 popd
