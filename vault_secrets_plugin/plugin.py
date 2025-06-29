@@ -7,7 +7,19 @@ from .dynamic_azure import get_azure_secret
 name = "Vault Secrets Plugin"
 
 inputs = {
-    "fields": [],
+    "fields": [
+        {"id": "secret_json", "type": "string", "label": "Secret JSON"},
+        {"id": "secret_value", "type": "string", "label": "Secret Value"},
+        {"id": "aws_access_key", "type": "string", "label": "AWS Access Key"},
+        {"id": "aws_secret_key", "type": "string", "label": "AWS Secret Key"},
+        {"id": "aws_session_token", "type": "string", "label": "AWS Session Token"},
+        {"id": "db_username", "type": "string", "label": "DB Username"},
+        {"id": "db_password", "type": "string", "label": "DB Password"},
+        {"id": "arm_client_id", "type": "string", "label": "ARM Client ID"},
+        {"id": "arm_client_secret", "type": "string", "label": "ARM Client Secret"},
+        {"id": "arm_tenant_id", "type": "string", "label": "ARM Tenant ID"},
+        {"id": "arm_subscription_id", "type": "string", "label": "ARM Subscription ID"}
+    ],
     "required": []
 }
 
