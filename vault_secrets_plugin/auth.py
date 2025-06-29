@@ -35,4 +35,3 @@ def authenticate(inputs):
 
     else:
         raise ValueError(f"Unsupported auth_method: {method}")
-

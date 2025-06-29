@@ -1,0 +1,70 @@
+{
+  "name": "Vault Azure Dynamic Credential",
+  "inputs": {
+    "fields": [
+      {
+        "id": "url",
+        "type": "string"
+      },
+      {
+        "id": "auth_method",
+        "type": "string",
+        "choices": [
+          "token",
+          "approle",
+          "jwt"
+        ]
+      },
+      {
+        "id": "token_value",
+        "type": "string"
+      },
+      {
+        "id": "approle_role_id",
+        "type": "string"
+      },
+      {
+        "id": "approle_secret_id",
+        "type": "string"
+      },
+      {
+        "id": "jwt_role",
+        "type": "string"
+      },
+      {
+        "id": "jwt_token",
+        "type": "string"
+      },
+      {
+        "id": "namespace",
+        "type": "string"
+      },
+      {
+        "id": "engine_type",
+        "type": "string",
+        "default": "dynamic"
+      },
+      {
+        "id": "dynamic_engine",
+        "type": "string",
+        "default": "azure"
+      },
+      {
+        "id": "mount",
+        "type": "string"
+      },
+      {
+        "id": "path",
+        "type": "string"
+      }
+    ]
+  },
+  "injectors": {
+    "env": {
+      "ARM_CLIENT_ID": "{{ arm_client_id }}",
+      "ARM_CLIENT_SECRET": "{{ arm_client_secret }}",
+      "ARM_TENANT_ID": "{{ arm_tenant_id }}",
+      "ARM_SUBSCRIPTION_ID": "{{ arm_subscription_id }}"
+    }
+  }
+}
