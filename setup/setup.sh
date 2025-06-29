@@ -25,7 +25,7 @@ curl -k -s -o /dev/null -w "%{http_code}\n" \
   -H "Authorization: Bearer $TOKEN" \
   -X POST \
   -d @vault_secrets_auth_credential_type.json \
-  "$AAP_URL/api/v2/credential_types/"
+  "$AAP_URL/api/controller/v2/credential_types/"
 
 # Post the Vault Secrets Lookup Credential Type
 echo "Creating Vault Secrets Lookup Credential Type..."
@@ -34,6 +34,6 @@ curl -k -s -o /dev/null -w "%{http_code}\n" \
   -H "Authorization: Bearer $TOKEN" \
   -X POST \
   -d @vault_secrets_lookup_credential_type.json \
-  "$AAP_URL/api/v2/credential_types/"
+  "$AAP_URL/api/controller/v2/credential_types/"
 
 echo "Done."
