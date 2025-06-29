@@ -32,12 +32,6 @@ inputs = {
             "label": "Version",
             "help_text": "Version for KV v2 (optional)."
         },
-        "params": {
-            "type": "string",
-            "multiline": True,
-            "label": "Params (JSON)",
-            "help_text": "Optional JSON body for dynamic engines."
-        },
         "secret_key": {
             "type": "string",
             "label": "Secret Key",
