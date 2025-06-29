@@ -1,7 +1,6 @@
 {
   "name": "Vault AWS Dynamic Credential Lookup",
   "kind": "cloud",
-  "namespace": "vault_secrets",
   "inputs": {
     "fields": [
       {"id": "namespace", "type": "string", "label": "Vault Namespace"},
