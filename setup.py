@@ -1,7 +1,7 @@
 from setuptools import setup, find_packages
 
 setup(
-    name='awx-vault-credential-plugins',
+    name='awx-vault-secrets-plugin',
     version='1.0.0',
     description='HashiCorp Vault Static and Dynamic Credential Plugins for AWX/AAP',
     long_description='''

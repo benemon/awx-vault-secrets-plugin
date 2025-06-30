@@ -1,15 +1,19 @@
-"""
-HashiCorp Vault Credential Plugins for AWX
+import collections
+from .vault_credentials import vault_static_backend, vault_dynamic_backend, VAULT_STATIC_INPUTS, VAULT_DYNAMIC_INPUTS
 
-This module provides two credential plugins:
-1. vault_static_plugin - For static secrets from KV stores
-2. vault_dynamic_plugin - For dynamic credential generation
+CredentialPlugin = collections.namedtuple('CredentialPlugin', ['name', 'inputs', 'backend'])
 
-Usage:
-    The plugins are automatically registered via entry_points in setup.py
-"""
+# Fix: Use simple names, no complex namespacing
+vault_static_plugin = CredentialPlugin(
+    name='vault_static_secrets',
+    inputs=VAULT_STATIC_INPUTS,
+    backend=vault_static_backend
+)
 
-from .vault_credentials import vault_static_plugin, vault_dynamic_plugin
+vault_dynamic_plugin = CredentialPlugin(
+    name='vault_dynamic_secrets', 
+    inputs=VAULT_DYNAMIC_INPUTS,
+    backend=vault_dynamic_backend
+)
 
-__version__ = '1.0.0'
 __all__ = ['vault_static_plugin', 'vault_dynamic_plugin']

@@ -574,23 +574,3 @@ def vault_dynamic_backend(**kwargs):
     except Exception as e:
         logger.error(f"Unexpected error in vault_dynamic_backend: {str(e)}")
         raise VaultError(f"Unexpected error: {str(e)}")
-
-# =============================================================================
-# PLUGIN DEFINITIONS
-# =============================================================================
-
-CredentialPlugin = collections.namedtuple('CredentialPlugin', ['name', 'inputs', 'backend'])
-
-# Static secrets plugin
-vault_static_plugin = CredentialPlugin(
-    'Vault Static Secrets',
-    VAULT_STATIC_INPUTS,
-    vault_static_backend
-)
-
-# Dynamic secrets plugin  
-vault_dynamic_plugin = CredentialPlugin(
-    'Vault Dynamic Secrets',
-    VAULT_DYNAMIC_INPUTS,
-    vault_dynamic_backend
-)
