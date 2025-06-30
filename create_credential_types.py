@@ -1,70 +1,61 @@
-"""Manual credential type creation script"""
-
-def create_vault_static_credential_type():
-    """Create the Vault Static Secrets credential type"""
-    try:
-        from awx.main.models.credential import CredentialType
-        
-        existing = CredentialType.objects.filter(name="Vault Static Secrets").first()
-        if existing:
-            print(f"Vault Static Secrets credential type already exists (ID: {existing.id})")
-            return existing
-        
-        credential_type = CredentialType.objects.create(
-            name="Vault Static Secrets",
-            description="Retrieve static secrets from HashiCorp Vault KV store",
-            kind="cloud",
-            namespace=None,
-            inputs={"plugin_name": "vault_static_secrets"},
-            injectors={"env": {"VAULT_SECRET": "{{ secret_value }}"}},
-            managed=True
-        )
-        
-        print(f"Created Vault Static Secrets credential type (ID: {credential_type.id})")
-        return credential_type
-        
-    except Exception as e:
-        print(f"Error creating Vault Static Secrets credential type: {e}")
-        return None
-
-def create_vault_dynamic_credential_type():
-    """Create the Vault Dynamic Secrets credential type"""
-    try:
-        from awx.main.models.credential import CredentialType
-        
-        existing = CredentialType.objects.filter(name="Vault Dynamic Secrets").first()
-        if existing:
-            print(f"Vault Dynamic Secrets credential type already exists (ID: {existing.id})")
-            return existing
-        
-        credential_type = CredentialType.objects.create(
-            name="Vault Dynamic Secrets",
-            description="Generate dynamic secrets from HashiCorp Vault",
-            kind="cloud",
-            namespace=None,
-            inputs={"plugin_name": "vault_dynamic_secrets"},
-            injectors={"env": {"VAULT_CREDENTIAL": "{{ credential_value }}"}},
-            managed=True
-        )
-        
-        print(f"Created Vault Dynamic Secrets credential type (ID: {credential_type.id})")
-        return credential_type
-        
-    except Exception as e:
-        print(f"Error creating Vault Dynamic Secrets credential type: {e}")
-        return None
-
-def main():
-    """Create both credential types"""
-    print("Creating Vault credential types...")
+def create_vault_credential_types():
+    """Create all three Vault credential types with Option A implementation"""
+    from awx.main.models.credential import CredentialType
     
-    static_type = create_vault_static_credential_type()
-    dynamic_type = create_vault_dynamic_credential_type()
+    print("Creating Vault credential types with reference field approach...")
     
-    if static_type and dynamic_type:
-        print("\n✅ All credential types created successfully!")
-    else:
-        print("\n❌ Some credential types failed to create. Check logs for details.")
+    # Clean up existing types
+    existing = CredentialType.objects.filter(
+        name__in=["Vault Authentication", "Vault Static Secrets", "Vault Dynamic Secrets"]
+    )
+    if existing.exists():
+        print(f"Cleaning up {existing.count()} existing credential types...")
+        existing.delete()
+    
+    # 1. Vault Authentication
+    auth_type = CredentialType.objects.create(
+        name="Vault Authentication",
+        description="HashiCorp Vault authentication credentials",
+        kind="cloud",
+        namespace=None,
+        inputs={"plugin_name": "vault_auth"},
+        injectors={"env": {"VAULT_AUTH_DATA": "{{ auth_data }}"}},
+        managed=True
+    )
+    print(f"✅ Created Vault Authentication credential type (ID: {auth_type.id})")
+    
+    # 2. Vault Static Secrets
+    static_type = CredentialType.objects.create(
+        name="Vault Static Secrets",
+        description="Retrieve static secrets from HashiCorp Vault KV store",
+        kind="cloud",
+        namespace=None,
+        inputs={"plugin_name": "vault_static_secrets"},
+        injectors={"env": {"VAULT_SECRET": "{{ secret_value }}"}},
+        managed=True
+    )
+    print(f"✅ Created Vault Static Secrets credential type (ID: {static_type.id})")
+    
+    # 3. Vault Dynamic Secrets
+    dynamic_type = CredentialType.objects.create(
+        name="Vault Dynamic Secrets",
+        description="Generate dynamic secrets from HashiCorp Vault",
+        kind="cloud",
+        namespace=None,
+        inputs={"plugin_name": "vault_dynamic_secrets"},
+        injectors={"env": {"VAULT_CREDENTIAL": "{{ credential_value }}"}},
+        managed=True
+    )
+    print(f"✅ Created Vault Dynamic Secrets credential type (ID: {dynamic_type.id})")
+    
+    print("\n🎉 All credential types created successfully!")
+    print("\nUsage with Option A (Reference Field Approach):")
+    print("1. Create Vault Authentication credentials (stores auth details)")
+    print("2. Create Vault Static/Dynamic credentials that reference auth by name")
+    print("3. Only attach Static/Dynamic credentials to job templates")
+    print("4. Auth credentials are automatically used via reference")
+    
+    return auth_type, static_type, dynamic_type
 
 if __name__ == '__main__':
-    main()
+    create_vault_credential_types()

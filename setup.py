@@ -1,18 +1,9 @@
 from setuptools import setup, find_packages
 
 setup(
-    name='awx-vault-secrets-plugin',
-    version='1.0.0',
-    description='HashiCorp Vault Static and Dynamic Credential Plugins for AWX/AAP',
-    long_description='''
-    This package provides two credential plugins for AWX/Ansible Automation Platform:
-    
-    1. Vault Static Secrets - Retrieves static secrets from Vault KV stores
-    2. Vault Dynamic Secrets - Generates dynamic credentials from Vault secrets engines
-    
-    The plugins are designed with separation of concerns, mirroring the Vault Secrets 
-    Operator's VaultStaticSecret and VaultDynamicSecret resources.
-    ''',
+    name='awx-vault-credential-plugins',
+    version='2.0.0',
+    description='HashiCorp Vault Authentication and Secrets Plugins for AWX/AAP',
     packages=find_packages(),
     install_requires=[
         'requests>=2.25.0',
@@ -20,6 +11,7 @@ setup(
     ],
     entry_points={
         'awx.credential_plugins': [
+            'vault_auth = vault_plugins:vault_auth_plugin',
             'vault_static_secrets = vault_plugins:vault_static_plugin',
             'vault_dynamic_secrets = vault_plugins:vault_dynamic_plugin',
         ]

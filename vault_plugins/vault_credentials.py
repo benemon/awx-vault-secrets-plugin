@@ -1,5 +1,38 @@
-# HashiCorp Vault Credential Plugins for AAP
-# Clean room implementation with separation of concerns
+# =============================================================================
+# FILE: vault_plugins/__init__.py
+# =============================================================================
+
+import collections
+from .vault_credentials import (
+    vault_auth_backend, vault_static_backend, vault_dynamic_backend,
+    VAULT_AUTH_INPUTS, VAULT_STATIC_INPUTS, VAULT_DYNAMIC_INPUTS
+)
+
+CredentialPlugin = collections.namedtuple('CredentialPlugin', ['name', 'inputs', 'backend'])
+
+vault_auth_plugin = CredentialPlugin(
+    name='vault_auth',
+    inputs=VAULT_AUTH_INPUTS,
+    backend=vault_auth_backend
+)
+
+vault_static_plugin = CredentialPlugin(
+    name='vault_static_secrets',
+    inputs=VAULT_STATIC_INPUTS,
+    backend=vault_static_backend
+)
+
+vault_dynamic_plugin = CredentialPlugin(
+    name='vault_dynamic_secrets',
+    inputs=VAULT_DYNAMIC_INPUTS,
+    backend=vault_dynamic_backend
+)
+
+__all__ = ['vault_auth_plugin', 'vault_static_plugin', 'vault_dynamic_plugin']
+
+# =============================================================================
+# FILE: vault_plugins/vault_credentials.py
+# =============================================================================
 
 import collections
 import requests
@@ -36,7 +69,7 @@ class VaultConfigurationError(VaultError):
     pass
 
 class VaultAuthenticator:
-    """Shared authentication handler for both static and dynamic plugins"""
+    """Shared authentication handler for Vault plugins"""
     
     def __init__(self):
         self._token_cache = {}
@@ -44,7 +77,6 @@ class VaultAuthenticator:
     
     def authenticate(self, **kwargs) -> Dict[str, str]:
         """Authenticate and return headers"""
-        # Infer auth method from provided credentials
         auth_method = self._infer_auth_method(**kwargs)
         
         if auth_method == 'token':
@@ -172,12 +204,11 @@ class VaultAuthenticator:
         """Determine SSL verification settings"""
         ca_cert = kwargs.get('ca_cert')
         if ca_cert:
-            # Write CA cert to temp file
             import tempfile
             with tempfile.NamedTemporaryFile(mode='w', delete=False, suffix='.pem') as ca_file:
                 ca_file.write(ca_cert)
                 return ca_file.name
-        return True  # Default to verify SSL
+        return True
     
     def _build_headers(self, token: str, namespace: Optional[str] = None) -> Dict[str, str]:
         """Build request headers"""
@@ -210,10 +241,9 @@ class VaultAuthenticator:
 vault_auth = VaultAuthenticator()
 
 def validate_common_inputs(**kwargs):
-    """Validate common inputs for both plugins"""
+    """Validate common inputs for auth plugin"""
     errors = []
     
-    # Required fields
     if not kwargs.get('url'):
         errors.append("Vault URL is required")
     
@@ -236,17 +266,22 @@ def validate_common_inputs(**kwargs):
         raise VaultConfigurationError("; ".join(errors))
 
 # =============================================================================
-# STATIC SECRETS PLUGIN
+# VAULT AUTHENTICATION CREDENTIAL TYPE
 # =============================================================================
 
-# Static secrets credential type definition
-VAULT_STATIC_INPUTS = {
+VAULT_AUTH_INPUTS = {
     'fields': [
         {
             'id': 'url',
             'label': 'Vault Server URL',
             'type': 'string',
             'help_text': 'Vault server URL (e.g., https://vault.example.com:8200)'
+        },
+        {
+            'id': 'namespace',
+            'label': 'Namespace',
+            'type': 'string',
+            'help_text': 'Vault namespace (Enterprise feature)'
         },
         {
             'id': 'token',
@@ -289,12 +324,55 @@ VAULT_STATIC_INPUTS = {
             'type': 'string',
             'multiline': True,
             'help_text': 'PEM-encoded CA certificate for SSL verification'
+        }
+    ],
+    'required': ['url']
+}
+
+def vault_auth_backend(**kwargs):
+    """Backend for Vault authentication credential type"""
+    try:
+        validate_common_inputs(**kwargs)
+        
+        # Authenticate and get token
+        headers = vault_auth.authenticate(**kwargs)
+        vault_token = headers.get('X-Vault-Token')
+        
+        if not vault_token:
+            raise VaultAuthenticationError("Failed to obtain Vault token")
+        
+        # Return authentication details for consumption by other plugins
+        auth_data = {
+            'vault_url': kwargs['url'].rstrip('/'),
+            'vault_token': vault_token,
+            'vault_ca_cert': kwargs.get('ca_cert', ''),
+        }
+        
+        return json.dumps(auth_data)
+        
+    except VaultError:
+        raise
+    except Exception as e:
+        logger.error(f"Unexpected error in vault_auth_backend: {str(e)}")
+        raise VaultError(f"Unexpected error: {str(e)}")
+
+# =============================================================================
+# VAULT STATIC SECRETS CREDENTIAL TYPE
+# =============================================================================
+
+VAULT_STATIC_INPUTS = {
+    'fields': [
+        {
+            'id': 'auth_credential_name',
+            'label': 'Vault Auth Credential Name',
+            'type': 'string',
+            'help_text': 'Name of the Vault Authentication credential to use'
         },
         {
             'id': 'namespace',
-            'label': 'Vault Namespace',
+            'label': 'Namespace',
             'type': 'string',
-            'help_text': 'Vault namespace (Enterprise feature)'
+            'help_text': 'Vault namespace for secret access'
         },
         {
             'id': 'mount_point',
@@ -325,30 +403,59 @@ VAULT_STATIC_INPUTS = {
             'help_text': 'Key name within the secret to retrieve (optional - returns JSON if empty)'
         }
     ],
-    'required': ['url', 'secret_path']
+    'required': ['auth_credential_name', 'secret_path']
 }
 
-def vault_static_backend(**kwargs):
-    """
-    Backend function for retrieving static secrets from Vault KV store
-    Mirrors Vault Secrets Operator VaultStaticSecret behavior
-    """
+def _get_vault_auth_from_credential(auth_credential_name):
+    """Get Vault authentication by executing the named auth credential"""
+    from awx.main.models.credential import Credential
+    
     try:
-        # Validate inputs
-        validate_common_inputs(**kwargs)
+        # Find the auth credential by name
+        auth_credential = Credential.objects.get(
+            name=auth_credential_name,
+            credential_type__name="Vault Authentication"
+        )
+        
+        # Execute the auth credential to get token
+        auth_result = vault_auth_backend(**auth_credential.inputs)
+        
+        return json.loads(auth_result)
+        
+    except Credential.DoesNotExist:
+        raise VaultConfigurationError(f"Vault Authentication credential '{auth_credential_name}' not found")
+    except Exception as e:
+        raise VaultConfigurationError(f"Failed to get auth from credential '{auth_credential_name}': {str(e)}")
+
+def vault_static_backend(**kwargs):
+    """Backend function for retrieving static secrets from Vault KV store"""
+    try:
+        # Get auth credential name and execute it
+        auth_credential_name = kwargs.get('auth_credential_name')
+        if not auth_credential_name:
+            raise VaultConfigurationError("auth_credential_name is required")
+        
+        vault_auth_data = _get_vault_auth_from_credential(auth_credential_name)
         
         secret_path = kwargs.get('secret_path')
         if not secret_path:
             raise VaultConfigurationError("secret_path is required for static secrets")
         
         # Extract parameters
-        url = kwargs['url'].rstrip('/')
+        url = vault_auth_data['vault_url']
+        vault_token = vault_auth_data['vault_token']
         mount_point = kwargs.get('mount_point', 'secret')
         kv_version = kwargs.get('kv_version', 'v2')
         secret_key = kwargs.get('secret_key')
+        namespace = kwargs.get('namespace')
         
-        # Authenticate
-        headers = vault_auth.authenticate(**kwargs)
+        # Build headers
+        headers = {
+            'X-Vault-Token': vault_token,
+            'Content-Type': 'application/json'
+        }
+        if namespace:
+            headers['X-Vault-Namespace'] = namespace
         
         # Build secret URL based on KV version
         if kv_version == 'v1':
@@ -358,10 +465,20 @@ def vault_static_backend(**kwargs):
         
         # Retrieve secret
         logger.debug(f"Retrieving static secret from: {secret_url}")
+        
+        # Use CA cert if provided
+        verify_ssl = True
+        ca_cert = vault_auth_data.get('vault_ca_cert')
+        if ca_cert:
+            import tempfile
+            with tempfile.NamedTemporaryFile(mode='w', delete=False, suffix='.pem') as ca_file:
+                ca_file.write(ca_cert)
+                verify_ssl = ca_file.name
+        
         response = requests.get(
             secret_url,
             headers=headers,
-            verify=vault_auth._get_ssl_verify(kwargs),
+            verify=verify_ssl,
             timeout=30
         )
         
@@ -402,65 +519,22 @@ def vault_static_backend(**kwargs):
         raise VaultError(f"Unexpected error: {str(e)}")
 
 # =============================================================================
-# DYNAMIC SECRETS PLUGIN
+# VAULT DYNAMIC SECRETS CREDENTIAL TYPE
 # =============================================================================
 
-# Dynamic secrets credential type definition
 VAULT_DYNAMIC_INPUTS = {
     'fields': [
         {
-            'id': 'url',
-            'label': 'Vault Server URL',
+            'id': 'auth_credential_name',
+            'label': 'Vault Auth Credential Name',
             'type': 'string',
-            'help_text': 'Vault server URL (e.g., https://vault.example.com:8200)'
-        },
-        {
-            'id': 'token',
-            'label': 'Vault Token',
-            'type': 'string',
-            'secret': True,
-            'help_text': 'Vault authentication token (leave empty if using other auth)'
-        },
-        {
-            'id': 'role_id',
-            'label': 'AppRole Role ID',
-            'type': 'string',
-            'help_text': 'Role ID for AppRole authentication'
-        },
-        {
-            'id': 'secret_id',
-            'label': 'AppRole Secret ID',
-            'type': 'string',
-            'secret': True,
-            'help_text': 'Secret ID for AppRole authentication'
-        },
-        {
-            'id': 'client_cert',
-            'label': 'Client Certificate',
-            'type': 'string',
-            'multiline': True,
-            'help_text': 'PEM-encoded client certificate for TLS auth'
-        },
-        {
-            'id': 'client_key',
-            'label': 'Client Private Key',
-            'type': 'string',
-            'secret': True,
-            'multiline': True,
-            'help_text': 'PEM-encoded private key for client certificate'
-        },
-        {
-            'id': 'ca_cert',
-            'label': 'CA Certificate',
-            'type': 'string',
-            'multiline': True,
-            'help_text': 'PEM-encoded CA certificate for SSL verification'
+            'help_text': 'Name of the Vault Authentication credential to use'
         },
         {
             'id': 'namespace',
-            'label': 'Vault Namespace',
+            'label': 'Namespace',
             'type': 'string',
-            'help_text': 'Vault namespace (Enterprise feature)'
+            'help_text': 'Vault namespace for secret access'
         },
         {
             'id': 'mount_point',
@@ -491,30 +565,38 @@ VAULT_DYNAMIC_INPUTS = {
             'help_text': 'Which credential field to return (username, password, or full_json)'
         }
     ],
-    'required': ['url', 'role_name']
+    'required': ['auth_credential_name', 'role_name']
 }
 
 def vault_dynamic_backend(**kwargs):
-    """
-    Backend function for generating dynamic secrets from Vault
-    Mirrors Vault Secrets Operator VaultDynamicSecret behavior
-    """
+    """Backend function for generating dynamic secrets from Vault"""
     try:
-        # Validate inputs
-        validate_common_inputs(**kwargs)
+        # Get auth credential name and execute it
+        auth_credential_name = kwargs.get('auth_credential_name')
+        if not auth_credential_name:
+            raise VaultConfigurationError("auth_credential_name is required")
+        
+        vault_auth_data = _get_vault_auth_from_credential(auth_credential_name)
         
         role_name = kwargs.get('role_name')
         if not role_name:
             raise VaultConfigurationError("role_name is required for dynamic secrets")
         
         # Extract parameters
-        url = kwargs['url'].rstrip('/')
+        url = vault_auth_data['vault_url']
+        vault_token = vault_auth_data['vault_token']
         mount_point = kwargs.get('mount_point', 'database')
         credential_field = kwargs.get('credential_field', 'username')
         ttl = kwargs.get('ttl')
+        namespace = kwargs.get('namespace')
         
-        # Authenticate
-        headers = vault_auth.authenticate(**kwargs)
+        # Build headers
+        headers = {
+            'X-Vault-Token': vault_token,
+            'Content-Type': 'application/json'
+        }
+        if namespace:
+            headers['X-Vault-Namespace'] = namespace
         
         # Build credentials generation URL
         creds_url = f"{url}/v1/{mount_point}/creds/{role_name}"
@@ -526,19 +608,29 @@ def vault_dynamic_backend(**kwargs):
         
         # Generate dynamic credentials
         logger.debug(f"Generating dynamic credentials from: {creds_url}")
+        
+        # Use CA cert if provided
+        verify_ssl = True
+        ca_cert = vault_auth_data.get('vault_ca_cert')
+        if ca_cert:
+            import tempfile
+            with tempfile.NamedTemporaryFile(mode='w', delete=False, suffix='.pem') as ca_file:
+                ca_file.write(ca_cert)
+                verify_ssl = ca_file.name
+        
         if request_data:
             response = requests.post(
                 creds_url,
                 json=request_data,
                 headers=headers,
-                verify=vault_auth._get_ssl_verify(kwargs),
+                verify=verify_ssl,
                 timeout=30
             )
         else:
             response = requests.get(
                 creds_url,
                 headers=headers,
-                verify=vault_auth._get_ssl_verify(kwargs),
+                verify=verify_ssl,
                 timeout=30
             )
         
