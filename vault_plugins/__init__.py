@@ -17,13 +17,13 @@ vault_auth_plugin = CredentialPlugin(
 )
 
 vault_static_plugin = CredentialPlugin(
-    name='Vault Static Secrets', 
+    name='Vault Static Secret', 
     inputs=VAULT_STATIC_INPUTS,
     backend=vault_static_backend
 )
 
 vault_dynamic_plugin = CredentialPlugin(
-    name='Vault Dynamic Secrets',
+    name='Vault Dynamic Secret',
     inputs=VAULT_DYNAMIC_INPUTS,
     backend=vault_dynamic_backend
 )
