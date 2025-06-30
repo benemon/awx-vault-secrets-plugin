@@ -1,0 +1,13 @@
+database:
+  host: "{{ database_host }}"
+  username: "{{ database_user }}"
+  password: "{{ database_password }}"
+  ssl_mode: require
+
+api:
+  timeout: 30
+  retries: 3
+  
+logging:
+  level: info
+  file: /var/log/myapp/app.log

@@ -1,0 +1,19 @@
+{
+  "name": "Database Maintenance with Dynamic Creds",
+  "description": "Run database maintenance using Vault dynamic credentials",
+  "job_type": "run", 
+  "inventory": "Database Servers",
+  "project": "DB Maintenance",
+  "playbook": "playbook-dynamic-secrets.yml",
+  "credentials": [
+    "Vault Dynamic Secrets - DB Admin"
+  ],
+  "extra_vars": {
+    "database_host": "prod-db.example.com",
+    "database_port": 5432,
+    "database_name": "production",
+    "credential_field": "full_json"
+  },
+  "survey_enabled": true,
+  "become_enabled": false
+}

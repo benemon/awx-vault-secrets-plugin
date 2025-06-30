@@ -1,0 +1,19 @@
+{
+  "name": "Deploy App with Vault Secrets",
+  "description": "Deploy application using Vault static secrets",
+  "job_type": "run",
+  "inventory": "Production Servers",
+  "project": "MyApp Deployment",
+  "playbook": "playbook-static-secrets.yml",
+  "credentials": [
+    "SSH Key",
+    "Vault Static Secrets - Production DB"
+  ],
+  "extra_vars": {
+    "database_host": "prod-db.example.com",
+    "database_user": "myapp_user"
+  },
+  "survey_enabled": false,
+  "become_enabled": true,
+  "allow_simultaneous": false
+}
