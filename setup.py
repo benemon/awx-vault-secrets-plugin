@@ -6,7 +6,7 @@ setup(
     packages=find_packages(),
     entry_points={
         "awx.credential_plugins": [
-            "hashicorp_vault_static_secret = vault_secrets_plugin.vault_static_plugin"
+            "hashicorp_vault_static_secret = vault_secrets_plugin.static_plugin"
         ]
     },
     install_requires=[],
