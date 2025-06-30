@@ -36,6 +36,24 @@ def setup_credential_types():
         logger.warning("awx-manage not found - manual credential type creation required")
         return False
 
+def restart_automation_controller():
+    """Restart the automation controller service"""
+    try:
+        result = subprocess.run([
+            'automation-controller-service', 'restart'
+        ], check=True, capture_output=True, text=True)
+        
+        logger.info("Automation controller service restarted successfully")
+        return True
+    except subprocess.CalledProcessError as e:
+        logger.error(f"Failed to restart automation controller service: {e}")
+        logger.error(f"Service restart error: {e.stderr}")
+        return False
+    except FileNotFoundError:
+        logger.warning("automation-controller-service command not found - manual restart required")
+        logger.info("Please manually restart AWX services")
+        return False
+
 def main():
     """Main installation process"""
     logger.info("Starting Vault credential plugins installation...")
@@ -47,8 +65,16 @@ def main():
     if not setup_credential_types():
         logger.warning("Credential types setup failed - may need manual creation")
     
+    # Restart automation controller service after credential types setup
+    if not restart_automation_controller():
+        logger.warning("Service restart failed - please restart manually")
+        logger.info("Manual restart command: automation-controller-service restart")
+    
     logger.info("Installation process completed!")
-    logger.info("Run 'python create_credential_types.py' if automatic setup failed")
+    logger.info("Next steps:")
+    logger.info("1. Check AWX UI for new credential types")
+    logger.info("2. Run 'python create_credential_types.py' if automatic setup failed")
+    logger.info("3. Verify plugins are working with test credentials")
 
 if __name__ == '__main__':
     main()
