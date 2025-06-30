@@ -3,7 +3,7 @@ from .auth import authenticate
 name = "HashiCorp Vault Dynamic Secret"
 
 metadata = {
-    "version": "1.0",
+    "version": "0.0.1",
     "author": "Benjamin Holmes",
     "description": "Retrieve dynamic secrets (AWS, Azure, DB) from HashiCorp Vault."
 }

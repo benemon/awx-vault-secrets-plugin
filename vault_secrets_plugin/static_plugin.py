@@ -3,7 +3,7 @@ from .auth import authenticate
 name = "HashiCorp Vault Static Secret"
 
 metadata = {
-    "version": "1.0",
+    "version": "0.0.1",
     "author": "Benjamin Holmes",
     "description": "Retrieve static KV secrets (v1/v2) from HashiCorp Vault."
 }
