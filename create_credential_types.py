@@ -16,7 +16,7 @@ def create_vault_credential_types():
     auth_type = CredentialType.objects.create(
         name="Vault Authentication",
         description="HashiCorp Vault authentication credentials",
-        kind="cloud",
+        kind="external",
         namespace=None,
         inputs={"plugin_name": "vault_auth"},
         injectors={"env": {"VAULT_AUTH_DATA": "{{ auth_data }}"}},
@@ -28,7 +28,7 @@ def create_vault_credential_types():
     static_type = CredentialType.objects.create(
         name="Vault Static Secrets",
         description="Retrieve static secrets from HashiCorp Vault KV store",
-        kind="cloud",
+        kind="external",
         namespace=None,
         inputs={"plugin_name": "vault_static_secrets"},
         injectors={"env": {"VAULT_SECRET": "{{ secret_value }}"}},
@@ -40,7 +40,7 @@ def create_vault_credential_types():
     dynamic_type = CredentialType.objects.create(
         name="Vault Dynamic Secrets",
         description="Generate dynamic secrets from HashiCorp Vault",
-        kind="cloud",
+        kind="external",
         namespace=None,
         inputs={"plugin_name": "vault_dynamic_secrets"},
         injectors={"env": {"VAULT_CREDENTIAL": "{{ credential_value }}"}},
